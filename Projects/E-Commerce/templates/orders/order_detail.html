@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+{% load currency_filters %}
+
+{% block title %}Order #{{ order.id }} - Local E-Commerce{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Order #{{ order.id }}</h1>
+        <a href="{% url 'order_list' %}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i> Back to Orders
+        </a>
+    </div>
+    
+    {% if messages %}
+    <div class="messages mb-4">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Order Items</h5>
+                    <span class="badge {% if order.status == 'pending' %}bg-warning text-dark{% elif order.status == 'processing' %}bg-info text-dark{% elif order.status == 'shipped' %}bg-primary{% elif order.status == 'delivered' %}bg-success{% elif order.status == 'cancelled' %}bg-danger{% endif %}">
+                        {{ order.status|title }}
+                    </span>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Price</th>
+                                    <th>Quantity</th>
+                                    <th>Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in order_items %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            {% if item.product.image %}
+                                            <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="img-thumbnail me-3" style="width: 60px; height: 60px; object-fit: cover;">
+                                            {% else %}
+                                            <div class="bg-light me-3" style="width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;">
+                                                <i class="fas fa-image text-muted"></i>
+                                            </div>
+                                            {% endif %}
+                                            <div>
+                                                <h6 class="mb-0">{{ item.product.name }}</h6>
+                                                <small class="text-muted">
+                                                    <a href="{% url 'store_detail' item.product.store.id %}" class="text-decoration-none">
+                                                        {{ item.product.store.name }}
+                                                    </a>
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>{{ item.price|indian_currency }}</td>
+                                    <td>{{ item.quantity }}</td>
+                                    <td>{{ item.price|multiply:item.quantity|indian_currency }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            {% if user.user_type == 'store_owner' and order.status != 'delivered' and order.status != 'cancelled' %}
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white">
+                    <h5 class="card-title mb-0">Update Order Status</h5>
+                </div>
+                <div class="card-body">
+                    <form action="{% url 'update_order_status' order.id %}" method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="status" class="form-label">Status</label>
+                            <select class="form-select" id="status" name="status">
+                                <option value="pending" {% if order.status == 'pending' %}selected{% endif %}>Pending</option>
+                                <option value="processing" {% if order.status == 'processing' %}selected{% endif %}>Processing</option>
+                                <option value="shipped" {% if order.status == 'shipped' %}selected{% endif %}>Shipped</option>
+                                <option value="delivered" {% if order.status == 'delivered' %}selected{% endif %}>Delivered</option>
+                                <option value="cancelled" {% if order.status == 'cancelled' %}selected{% endif %}>Cancelled</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Update Status</button>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white">
+                    <h5 class="card-title mb-0">Order Summary</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <h6 class="mb-2">Order Information</h6>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item px-0 d-flex justify-content-between">
+                                <span>Order Date:</span>
+                                <span>{{ order.created_at|date:"M d, Y" }}</span>
+                            </li>
+                            <li class="list-group-item px-0 d-flex justify-content-between">
+                                <span>Payment Method:</span>
+                                <span>{{ order.payment_method|title|replace:"_":" " }}</span>
+                            </li>
+                            <li class="list-group-item px-0 d-flex justify-content-between">
+                                <span>Shipping Method:</span>
+                                <span>{{ order.shipping_method|default:"Standard"|title }}</span>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h6 class="mb-2">Shipping Address</h6>
+                        <address class="mb-0">
+                            {{ order.shipping_address.address }}<br>
+                            {{ order.shipping_address.city }}, {{ order.shipping_address.state }} {{ order.shipping_address.postal_code }}<br>
+                            {{ order.shipping_address.country }}<br>
+                            Phone: {{ order.shipping_address.phone }}
+                        </address>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Subtotal:</span>
+                        <span>{{ order.total_amount|indian_currency }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Shipping:</span>
+                        <span>Free</span>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between mb-3">
+                        <strong>Total:</strong>
+                        <strong>{{ order.total_amount|indian_currency }}</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

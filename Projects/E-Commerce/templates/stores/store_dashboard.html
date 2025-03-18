@@ -1,0 +1,244 @@
+{% extends 'base.html' %}
+{% load currency_filters %}
+
+{% block title %}Store Dashboard - Local E-Commerce{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Store Dashboard</h1>
+        <a href="{% url 'store_detail' store.id %}" class="btn btn-outline-primary">
+            <i class="fas fa-eye me-2"></i> View Store
+        </a>
+    </div>
+    
+    {% if messages %}
+    <div class="messages mb-4">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card shadow-sm mb-4 text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Products</h5>
+                    <h2 class="display-4">{{ products_count }}</h2>
+                    <p class="text-muted">Total Products</p>
+                    <a href="#products" class="btn btn-sm btn-outline-primary">Manage Products</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm mb-4 text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Orders</h5>
+                    <h2 class="display-4">{{ orders_count }}</h2>
+                    <p class="text-muted">Total Orders</p>
+                    <a href="#orders" class="btn btn-sm btn-outline-primary">Manage Orders</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm mb-4 text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Sales</h5>
+                    <h2 class="display-4">{{ total_sales|indian_currency }}</h2>
+                    <p class="text-muted">Total Revenue</p>
+                    <a href="#" class="btn btn-sm btn-outline-primary">View Reports</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm mb-4 text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Pending</h5>
+                    <h2 class="display-4">{{ order_status_counts.pending }}</h2>
+                    <p class="text-muted">Pending Orders</p>
+                    <a href="#orders" class="btn btn-sm btn-outline-primary">Process Orders</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-white">
+            <h5 class="card-title mb-0">Store Information</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3 text-center">
+                    {% if store.logo %}
+                    <img src="{{ store.logo.url }}" alt="{{ store.name }}" class="img-fluid rounded mb-3" style="max-height: 150px;">
+                    {% else %}
+                    <div class="bg-light rounded py-4 mb-3">
+                        <i class="fas fa-store fa-4x text-muted"></i>
+                    </div>
+                    {% endif %}
+                    <a href="#" class="btn btn-sm btn-outline-primary">Update Logo</a>
+                </div>
+                <div class="col-md-9">
+                    <div class="mb-3">
+                        <label class="form-label">Store Name</label>
+                        <div class="d-flex">
+                            <input type="text" class="form-control" value="{{ store.name }}" readonly>
+                            <a href="#" class="btn btn-outline-primary ms-2">Edit</a>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Location</label>
+                        <div class="d-flex">
+                            <input type="text" class="form-control" value="{{ store.address }}" readonly>
+                            <a href="#" class="btn btn-outline-primary ms-2">Edit</a>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Description</label>
+                        <div class="d-flex">
+                            <textarea class="form-control" rows="3" readonly>{{ store.description }}</textarea>
+                            <a href="#" class="btn btn-outline-primary ms-2">Edit</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card shadow-sm mb-4" id="products">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">Products</h5>
+            <a href="#" class="btn btn-sm btn-primary">
+                <i class="fas fa-plus me-1"></i> Add New Product
+            </a>
+        </div>
+        <div class="card-body">
+            {% if products %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Price</th>
+                            <th>Stock</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for product in products %}
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    {% if product.image %}
+                                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-thumbnail me-3" style="width: 50px; height: 50px; object-fit: cover;">
+                                    {% else %}
+                                    <div class="bg-light me-3" style="width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">
+                                        <i class="fas fa-image text-muted"></i>
+                                    </div>
+                                    {% endif %}
+                                    <div>
+                                        <h6 class="mb-0">{{ product.name }}</h6>
+                                        <small class="text-muted">{{ product.category.name }}</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>{{ product.price|indian_currency }}</td>
+                            <td>{{ product.stock }}</td>
+                            <td>
+                                {% if product.is_active %}
+                                <span class="badge bg-success">Active</span>
+                                {% else %}
+                                <span class="badge bg-danger">Inactive</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="btn-group">
+                                    <a href="#" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="#" class="btn btn-sm btn-outline-danger">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-4">
+                <i class="fas fa-box-open fa-4x text-muted mb-3"></i>
+                <h3>No products yet</h3>
+                <p class="text-muted">You haven't added any products to your store yet.</p>
+                <a href="#" class="btn btn-primary mt-2">
+                    <i class="fas fa-plus me-1"></i> Add Your First Product
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="card shadow-sm mb-4" id="orders">
+        <div class="card-header bg-white">
+            <h5 class="card-title mb-0">Recent Orders</h5>
+        </div>
+        <div class="card-body">
+            {% if orders %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Date</th>
+                            <th>Customer</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in orders %}
+                        <tr>
+                            <td>#{{ order.id }}</td>
+                            <td>{{ order.created_at|date:"M d, Y" }}</td>
+                            <td>{{ order.user.username }}</td>
+                            <td>{{ order.total_amount|indian_currency }}</td>
+                            <td>
+                                {% if order.status == 'pending' %}
+                                <span class="badge bg-warning text-dark">Pending</span>
+                                {% elif order.status == 'processing' %}
+                                <span class="badge bg-info text-dark">Processing</span>
+                                {% elif order.status == 'shipped' %}
+                                <span class="badge bg-primary">Shipped</span>
+                                {% elif order.status == 'delivered' %}
+                                <span class="badge bg-success">Delivered</span>
+                                {% elif order.status == 'cancelled' %}
+                                <span class="badge bg-danger">Cancelled</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'order_detail' order.id %}" class="btn btn-sm btn-outline-primary">
+                                    View Details
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-4">
+                <i class="fas fa-shopping-cart fa-4x text-muted mb-3"></i>
+                <h3>No orders yet</h3>
+                <p class="text-muted">You haven't received any orders yet.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %} 

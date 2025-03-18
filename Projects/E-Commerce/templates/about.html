@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+
+{% block title %}About Us - Local E-Commerce{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="mb-4">About Local E-Commerce</h1>
+            <p class="lead">Supporting local businesses in your community.</p>
+        </div>
+    </div>
+    
+    <div class="row mb-5">
+        <div class="col-md-6">
+            <h2>Our Mission</h2>
+            <p>
+                At Local E-Commerce, our mission is to empower local businesses by providing them with a digital platform to reach more customers and grow their business. We believe in supporting local economies and helping small businesses thrive in the digital age.
+            </p>
+            <p>
+                We connect customers with unique products from local stores, making it easy to shop locally from the comfort of your home. By shopping on our platform, you're not just buying a product - you're supporting a local business and your community.
+            </p>
+        </div>
+        <div class="col-md-6">
+            <img src="/static/images/about-mission.jpg" alt="Our Mission" class="img-fluid rounded">
+        </div>
+    </div>
+    
+    <div class="row mb-5">
+        <div class="col-md-6 order-md-2">
+            <h2>Our Story</h2>
+            <p>
+                Local E-Commerce was founded in 2023 with a simple idea: to create a platform that connects local businesses with customers in their community. We noticed that many small businesses were struggling to compete with large online retailers, and we wanted to level the playing field.
+            </p>
+            <p>
+                What started as a small project has grown into a thriving marketplace with hundreds of local businesses and thousands of customers. We're proud to be a part of the local business ecosystem and to help small businesses succeed in the digital economy.
+            </p>
+        </div>
+        <div class="col-md-6 order-md-1">
+            <img src="/static/images/about-story.jpg" alt="Our Story" class="img-fluid rounded">
+        </div>
+    </div>
+    
+    <div class="row mb-5">
+        <div class="col-12">
+            <h2 class="text-center mb-4">Our Values</h2>
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+                <div class="col">
+                    <div class="card h-100 border-0 text-center">
+                        <div class="card-body">
+                            <div class="display-1 text-primary mb-3">
+                                <i class="fas fa-handshake"></i>
+                            </div>
+                            <h5 class="card-title">Community</h5>
+                            <p class="card-text">We believe in the power of community and supporting local businesses. When local businesses thrive, communities prosper.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card h-100 border-0 text-center">
+                        <div class="card-body">
+                            <div class="display-1 text-primary mb-3">
+                                <i class="fas fa-leaf"></i>
+                            </div>
+                            <h5 class="card-title">Sustainability</h5>
+                            <p class="card-text">Shopping locally reduces carbon footprint and supports sustainable business practices. We're committed to environmental responsibility.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card h-100 border-0 text-center">
+                        <div class="card-body">
+                            <div class="display-1 text-primary mb-3">
+                                <i class="fas fa-lock"></i>
+                            </div>
+                            <h5 class="card-title">Trust</h5>
+                            <p class="card-text">We build trust through transparency, security, and reliability. Our platform is designed to create a safe shopping experience.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-12">
+            <div class="card bg-light">
+                <div class="card-body">
+                    <h2 class="text-center mb-4">Join Our Community</h2>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>For Customers</h5>
+                            <p>Discover unique products from local stores and support your community.</p>
+                            <a href="{% url 'register' %}" class="btn btn-primary">Register as Customer</a>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>For Store Owners</h5>
+                            <p>Reach more customers and grow your business with our platform.</p>
+                            <a href="{% url 'register' %}" class="btn btn-outline-primary">Register as Store Owner</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
